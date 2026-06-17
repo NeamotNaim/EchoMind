@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}A home for the stories that matter{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-inner">
+    <h1 class="hero-title">Some stories exist only in memory. Until now.</h1>
+    <p class="hero-sub">EchoMind interviews your loved ones across multiple sessions, then five AI agents collaborate to transform their words into a beautiful memoir — preserved forever for your family.</p>
+    <div class="hero-cta">
+      <a href="#begin" class="btn btn-primary">Begin a New Memoir &rarr;</a>
+      <a href="{{ url_for('memoir.view_memoir', share_token='demo') }}" class="btn btn-ghost">See a Demo Memoir</a>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <h2 class="section-title">How it works</h2>
+  <ol class="how-list">
+    <li class="how-step">
+      <div class="step-num">1</div>
+      <h3>You answer the questions</h3>
+      <p>Our AI interviews your loved one with warmth and patience, one question at a time.</p>
+    </li>
+    <li class="how-step">
+      <div class="step-num">2</div>
+      <h3>Five agents get to work</h3>
+      <p>Interview, Organise, Verify, Write, Compile — each agent passes the story forward through Band.</p>
+    </li>
+    <li class="how-step">
+      <div class="step-num">3</div>
+      <h3>A memoir is born</h3>
+      <p>A professionally formatted PDF memoir, shareable with the whole family, preserved forever.</p>
+    </li>
+  </ol>
+</section>
+
+<section class="start" id="begin">
+  <h2 class="section-title">Begin</h2>
+  <p class="start-sub">Tell us a little about who you would like to interview.</p>
+  <form action="{{ url_for('main.start_session') }}" method="post" class="start-form">
+    <label class="field">
+      <span class="field-label">Who are we interviewing?</span>
+      <input type="text" name="subject_name" placeholder="e.g. Margaret Williams" required>
+    </label>
+    <label class="field">
+      <span class="field-label">Year of birth <em>(optional — helps us add historical context)</em></span>
+      <input type="number" name="birth_year" min="1850" max="2025" placeholder="e.g. 1938">
+    </label>
+    <label class="field">
+      <span class="field-label">Where did they grow up? <em>(optional)</em></span>
+      <input type="text" name="location" placeholder="e.g. Cardiff, Wales">
+    </label>
+    <button type="submit" class="btn btn-primary btn-large">Start the Interview &rarr;</button>
+  </form>
+</section>
+{% endblock %}

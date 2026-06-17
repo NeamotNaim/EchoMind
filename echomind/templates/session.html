@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Interview in progress{% endblock %}
+
+{% block content %}
+<section class="session-wrap">
+  <div class="session-grid">
+    <div class="conversation">
+      <div class="agent-intro">
+        <span class="quill" aria-hidden="true">&#x270E;</span>
+        <span class="agent-name">EchoMind Interviewer</span>
+      </div>
+
+      <div id="transcript" class="transcript" aria-live="polite">
+        {% for m in history %}
+          {% if m.role == 'assistant' %}
+            <div class="bubble bubble-assistant">
+              <div class="bubble-label">Interviewer</div>
+              <div class="bubble-body">{{ m.content }}</div>
+            </div>
+          {% else %}
+            <div class="bubble bubble-user">
+              <div class="bubble-label">You</div>
+              <div class="bubble-body">{{ m.content }}</div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <form id="answer-form" class="answer-form" autocomplete="off">
+        <textarea
+          id="answer-input"
+          name="message"
+          placeholder="Share your memory here&hellip;"
+          rows="6"
+          required
+        ></textarea>
+        <button type="submit" class="btn btn-primary">Share your memory &rarr;</button>
+      </form>
+    </div>
+
+    <aside class="progress" aria-label="Your story so far">
+      <h3>Your story so far</h3>
+      <ul class="progress-list">
+        <li data-topic="childhood"><span class="dot">&cir;</span> Childhood &amp; Origins</li>
+        <li data-topic="school"><span class="dot">&cir;</span> School &amp; Growing Up</li>
+        <li data-topic="love"><span class="dot">&cir;</span> Love &amp; Relationships</li>
+        <li data-topic="career"><span class="dot">&cir;</span> Career &amp; Life's Work</li>
+        <li data-topic="proud"><span class="dot">&cir;</span> Proudest Moments</li>
+        <li data-topic="hardships"><span class="dot">&cir;</span> Hardest Times</li>
+        <li data-topic="wisdom"><span class="dot">&cir;</span> Wisdom &amp; Advice</li>
+      </ul>
+      <p class="session-counter">Session 1 of 3 expected</p>
+      <p class="building-note">Your memoir is being built as you speak.</p>
+    </aside>
+  </div>
+</section>
+
+<script>
+  window.ECHOMIND_SESSION_ID = "{{ session.id }}";
+  window.ECHOMIND_SUBJECT = "{{ session.subject_name|e }}";
+</script>
+<script src="{{ url_for('static', filename='js/session.js') }}"></script>
+{% endblock %}

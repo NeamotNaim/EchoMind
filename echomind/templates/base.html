@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EchoMind — preserve the life stories that matter most, one interview at a time.">
+  <title>EchoMind — {% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 4 C 12 12, 22 14, 16 28 C 10 14, 20 12, 16 4 Z' fill='%238b6914'/></svg>">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <a href="{{ url_for('main.index') }}" class="brand-link">
+        <svg class="candle" viewBox="0 0 32 32" aria-hidden="true">
+          <path class="flame" d="M16 4 C 12 12, 22 14, 16 28 C 10 14, 20 12, 16 4 Z" fill="#8b6914"/>
+        </svg>
+        <span class="wordmark">EchoMind</span>
+      </a>
+      <p class="tagline">Preserving lives. One story at a time.</p>
+    </div>
+    <nav class="site-nav">
+      <a href="{{ url_for('main.index') }}">Home</a>
+      <a href="/memoir/demo">Demo Memoir</a>
+    </nav>
+  </header>
+
+  <main class="site-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <p>EchoMind &middot; Built for the Band of Agents Hackathon 2026 &middot; Every story deserves to be told.</p>
+  </footer>
+</body>
+</html>

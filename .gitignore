@@ -1,0 +1,161 @@
+# ====== Project meta / prompt files ======
+# The master build prompt is a developer reference, not part of the app
+master-prompt.md
+
+# ====== Python ======
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.ENV/
+
+# Pipenv / Poetry
+Pipfile.lock
+poetry.lock
+
+# mypy / pytest / coverage
+.mypy_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Jupyter
+.ipynb_checkpoints
+
+# ====== Environment & secrets ======
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.staging
+*.pem
+*.key
+secrets/
+
+# ====== Flask / app data ======
+instance/
+*.db
+*.sqlite
+*.sqlite3
+*.pid
+
+# Generated memoir outputs (regenerated at runtime)
+echomind/static/memoirs/*.pdf
+echomind/static/qrcodes/*.png
+echomind/band_transcript.log
+echomind/band_transcript.log.*
+
+# ====== Node / JS (if you add a frontend later) ======
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build output
+.next/
+out/
+.parcel-cache/
+.vite/
+
+# ====== IDEs & editors ======
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+.netrwhist
+Session.vim
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ====== OS / misc ======
+.DS_Store
+.AppleDouble
+.Spotlight-V100
+.Trashes
+.directory
+*.bak
+*.tmp
+*.orig
+*.rej
+*.swp
+*.swo
+
+# ====== Tooling caches ======
+.eslintcache
+.stylelintcache
+.grunt
+.bower_components
+.sass-cache/
+.tern-port
+.yarn-integrity
+.npm
+.node_repl_history
+.pkg-cache
+.pnpm-store/
+
+# ====== Logs ======
+*.log
+logs/
+puku-logs/
+
+# ====== Puku / Claude tooling ======
+.puku/
+.claude/
+.claude.json
+.mcp_config*

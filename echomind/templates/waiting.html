@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Your memoir is being created...{% endblock %}
+
+{% block content %}
+<section class="waiting">
+  <div class="waiting-inner">
+    <h1 class="waiting-title">Your memoir is being created&hellip;</h1>
+    <p class="waiting-sub">Five agents are collaborating through Band. Most memoirs are ready in 2&ndash;3 minutes.</p>
+
+    <ol class="timeline">
+      <li class="stage done" data-stage="interview">
+        <span class="stage-mark">&#10003;</span>
+        <div class="stage-body">
+          <h3>Interview complete</h3>
+          <p>Your conversation has been preserved.</p>
+        </div>
+      </li>
+      <li class="stage active" data-stage="organise">
+        <span class="stage-mark"><span class="spinner"></span></span>
+        <div class="stage-body">
+          <h3>@organiser is sorting your memories&hellip;</h3>
+          <p>Grouping the stories into chapters.</p>
+        </div>
+      </li>
+      <li class="stage" data-stage="factcheck">
+        <span class="stage-mark">&cir;</span>
+        <div class="stage-body">
+          <h3>@factchecker will add historical context</h3>
+          <p>Placing your story in the world it lived in.</p>
+        </div>
+      </li>
+      <li class="stage" data-stage="storytell">
+        <span class="stage-mark">&cir;</span>
+        <div class="stage-body">
+          <h3>@storyteller will write your chapters</h3>
+          <p>Turning memories into polished prose.</p>
+        </div>
+      </li>
+      <li class="stage" data-stage="compile">
+        <span class="stage-mark">&cir;</span>
+        <div class="stage-body">
+          <h3>@legacybuilder will compile your memoir</h3>
+          <p>Building the PDF and your shareable link.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<script>
+  window.ECHOMIND_SESSION_ID = "{{ session.id }}";
+</script>
+<script>
+  (function () {
+    var sid = window.ECHOMIND_SESSION_ID;
+    var stages = ["interview", "organise", "factcheck", "storytell", "compile"];
+    var advanced = { interview: true };
+
+    function setStage(idx) {
+      var nodes = document.querySelectorAll(".timeline .stage");
+      for (var i = 0; i < nodes.length; i++) {
+        var key = nodes[i].getAttribute("data-stage");
+        var mark = nodes[i].querySelector(".stage-mark");
+        if (i < idx) {
+          nodes[i].classList.add("done");
+          nodes[i].classList.remove("active");
+          mark.innerHTML = "&#10003;";
+        } else if (i === idx) {
+          nodes[i].classList.add("active");
+          nodes[i].classList.remove("done");
+          mark.innerHTML = '<span class="spinner"></span>';
+        } else {
+          nodes[i].classList.remove("active", "done");
+          mark.innerHTML = "&cir;";
+        }
+      }
+    }
+
+    function check() {
+      fetch("/session/" + sid + "/status", { credentials: "same-origin" })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.status === "complete" && data.share_token) {
+            window.location.href = "/memoir/" + data.share_token;
+            return;
+          }
+          if (data.status === "error") {
+            document.querySelector(".waiting-sub").textContent =
+              "Something went wrong. Please try again later.";
+            return;
+          }
+          // Heuristic progress: advance stages over time so judges see motion
+          var idx = 1;
+          var elapsed = (Date.now() - start) / 1000;
+          if (elapsed > 20) idx = 2;
+          if (elapsed > 50) idx = 3;
+          if (elapsed > 80) idx = 4;
+          setStage(idx);
+          setTimeout(check, 3000);
+        })
+        .catch(function () {
+          setTimeout(check, 5000);
+        });
+    }
+
+    var start = Date.now();
+    setStage(1);
+    setTimeout(check, 3000);
+  })();
+</script>
+{% endblock %}

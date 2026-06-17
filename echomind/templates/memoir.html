@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}{{ subject_name }} — A Life Story{% endblock %}
+
+{% block content %}
+<section class="memoir">
+  <header class="memoir-header">
+    <div class="memoir-title-block">
+      <h1 class="memoir-name">{{ subject_name }}</h1>
+      <p class="memoir-sub">A Life Story</p>
+      {% if birth_year %}
+        <p class="memoir-born">Born {{ birth_year }}</p>
+      {% endif %}
+    </div>
+    <div class="memoir-actions">
+      <a class="btn btn-primary" href="{{ url_for('memoir.download_memoir', share_token=share_token) }}">Download PDF</a>
+      <button class="btn btn-ghost" id="share-btn" type="button">Share this memoir</button>
+    </div>
+  </header>
+
+  <div class="memoir-body">
+    <nav class="chapter-nav" aria-label="Chapters">
+      <h3>Chapters</h3>
+      <ul>
+        {% for chapter_name in chapters.keys() %}
+          <li>
+            <a href="#chapter-{{ loop.index }}">{{ chapter_name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <article class="chapter-list">
+      {% for chapter_name, body in chapters.items() %}
+        <section class="chapter" id="chapter-{{ loop.index }}">
+          <h2 class="chapter-title">{{ chapter_name }}</h2>
+          <hr class="chapter-rule">
+          <div class="chapter-prose">
+            {% set sentences = body.split('\n\n') %}
+            {% for para in sentences %}
+              {% if para.strip() %}
+                <p>{{ para.strip() }}</p>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    </article>
+  </div>
+
+  <footer class="memoir-footer">
+    <p>This memoir was created with EchoMind on {{ now }}.</p>
+    <p class="memoir-dedication">Shared with love, to be kept forever.</p>
+    {% if qr_filename %}
+      <div class="qr-block">
+        <img src="{{ url_for('static', filename='qrcodes/' + qr_filename) }}" alt="QR code">
+        <p class="qr-label">Scan to read on any device</p>
+      </div>
+    {% endif %}
+  </footer>
+</section>
+
+<script>
+  (function () {
+    var btn = document.getElementById("share-btn");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      var url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () {
+          btn.textContent = "Link copied!";
+          setTimeout(function () { btn.textContent = "Share this memoir"; }, 2000);
+        });
+      } else {
+        window.prompt("Copy this link:", url);
+      }
+    });
+  })();
+</script>
+{% endblock %}

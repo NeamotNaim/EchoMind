@@ -4,9 +4,11 @@ The `/memoir/demo` route renders Margaret Williams's pre-written chapters
 directly (no DB lookup) per the build spec.
 """
 
+import io
 import json
 import logging
 import os
+import tempfile
 from datetime import datetime
 
 from flask import (
@@ -14,6 +16,7 @@ from flask import (
 )
 
 from models.database import Memoir, Session, db
+from utils.pdf_generator import MemoirPDFGenerator
 
 logger = logging.getLogger(__name__)
 memoir_bp = Blueprint("memoir", __name__)
@@ -176,6 +179,10 @@ def view_memoir(share_token: str):
 @memoir_bp.route("/memoir/<share_token>/download")
 def download_memoir(share_token: str):
     """Serve the PDF file for download."""
+    # Special case: the demo memoir is generated on demand from
+    # the hardcoded DEMO_CHAPTERS dict (no DB row exists for it).
+    if share_token == "demo":
+        return _generate_demo_pdf()
     memoir = Memoir.query.filter_by(share_token=share_token).first()
     if memoir is None or not memoir.pdf_path:
         abort(404)
@@ -190,6 +197,36 @@ def download_memoir(share_token: str):
         download_name=f"{subject_name}_memoir.pdf",
         mimetype="application/pdf",
     )
+
+
+def _generate_demo_pdf():
+    """Build the Margaret Williams demo PDF on demand and stream it back."""
+    # Write to a temp file so ReportLab can close the document properly,
+    # then read it back into BytesIO and send it. This avoids the "its too
+    # small" issue you'd get from a half-written stream.
+    tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+    tmp_path = tmp.name
+    tmp.close()
+    try:
+        MemoirPDFGenerator().generate(
+            subject_name="Margaret Rose Williams",
+            birth_year=1938,
+            chapters=DEMO_CHAPTERS,
+            output_path=tmp_path,
+        )
+        with open(tmp_path, "rb") as f:
+            data = f.read()
+        return send_file(
+            io.BytesIO(data),
+            as_attachment=True,
+            download_name="Margaret_Rose_Williams_memoir.pdf",
+            mimetype="application/pdf",
+        )
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
 
 
 # ----------------------------------------------------------------------

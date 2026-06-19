@@ -98,5 +98,8 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    port = int(os.getenv("FLASK_RUN_PORT", "5000"))
-    app.run(debug=True, host="0.0.0.0", port=port)
+    # On Railway / production: PORT is assigned by the platform and debug must be off.
+    # Locally: FLASK_RUN_PORT defaults to 5000 (or whatever is in .env).
+    port = int(os.getenv("PORT") or os.getenv("FLASK_RUN_PORT", "5000"))
+    debug = os.getenv("FLASK_DEBUG", "0").lower() in ("1", "true", "yes", "on")
+    app.run(debug=debug, host="0.0.0.0", port=port)

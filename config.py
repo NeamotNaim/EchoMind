@@ -32,8 +32,13 @@ class Config:
     )
     BAND_REST_URL = os.getenv("BAND_REST_URL", "https://app.band.ai/")
 
-    # Deployment / share links
-    BASE_URL = os.getenv("BASE_URL", "http://localhost:5000")
+    # Deployment / share links. On Railway, RAILWAY_PUBLIC_DOMAIN is auto-set
+    # to the public hostname (e.g. "echomind.up.railway.app"). Fall back to
+    # BASE_URL for local dev or other hosts.
+    BASE_URL = os.getenv(
+        "BASE_URL",
+        "https://" + os.getenv("RAILWAY_PUBLIC_DOMAIN", "localhost:5000"),
+    )
 
     # Demo mode (True by default so judges can see the app immediately)
     DEMO_MODE = os.getenv("DEMO_MODE", "True").lower() in ("1", "true", "yes", "on")

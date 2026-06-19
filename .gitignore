@@ -1,8 +1,35 @@
-# ====== Project meta / prompt files ======
-# The master build prompt is a developer reference, not part of the app
-master-prompt.md
-EchoMind_Gemini_Prompt_update.md
-# ====== Python ======
+# ====== Secrets & config ======
+# Real agent keys, environment overrides — never commit these
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.staging
+agent_config.yaml
+secrets/
+*.pem
+*.key
+
+# ====== Runtime / build artefacts ======
+# SQLite databases (regenerated at runtime)
+*.db
+*.sqlite
+*.sqlite3
+
+# Flask instance folder (uploaded PDFs, generated memoirs, session data)
+instance/
+
+# Generated Band transcripts (may contain PII)
+band_transcript.log
+band_transcript.log.*
+coord_transcript.log
+
+# Generated memoir / QR assets
+static/memoirs/*.pdf
+static/qrcodes/*.png
+
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -51,38 +78,12 @@ coverage.xml
 # Jupyter
 .ipynb_checkpoints
 
-# ====== Environment & secrets ======
-.env
-.env.local
-.env.*.local
-.env.development
-.env.production
-.env.staging
-*.pem
-*.key
-secrets/
-
-# ====== Flask / app data ======
-instance/
-*.db
-*.sqlite
-*.sqlite3
-*.pid
-
-# Generated memoir outputs (regenerated at runtime)
-echomind/static/memoirs/*.pdf
-echomind/static/qrcodes/*.png
-echomind/band_transcript.log
-echomind/band_transcript.log.*
-
-# ====== Node / JS (if you add a frontend later) ======
+# Node / JS (kept for future)
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-
-# Build output
 .next/
 out/
 .parcel-cache/
@@ -109,6 +110,11 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+.directory
+*.bak
+*.tmp
+*.orig
+*.rej
 
 # Sublime Text
 *.sublime-project
@@ -119,24 +125,18 @@ $RECYCLE.BIN/
 Session.vim
 
 # Emacs
-*~
 \#*\#
 .\#*
 
-# ====== OS / misc ======
-.DS_Store
-.AppleDouble
-.Spotlight-V100
-.Trashes
-.directory
-*.bak
-*.tmp
-*.orig
-*.rej
-*.swp
-*.swo
+# ====== Logs ======
+*.log
+logs/
 
 # ====== Tooling caches ======
+.puku/
+.claude/
+.claude.json
+.mcp_config*
 .eslintcache
 .stylelintcache
 .grunt
@@ -148,14 +148,3 @@ Session.vim
 .node_repl_history
 .pkg-cache
 .pnpm-store/
-
-# ====== Logs ======
-*.log
-logs/
-puku-logs/
-
-# ====== Puku / Claude tooling ======
-.puku/
-.claude/
-.claude.json
-.mcp_config*

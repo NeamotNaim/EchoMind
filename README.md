@@ -40,7 +40,7 @@ A complete **demo memoir for Margaret Rose Williams** is available at `/memoir/d
 ## Project structure
 
 ```
-echomind/
+.
 ├── app.py                  ← Flask application factory
 ├── config.py               ← env-driven configuration
 ├── requirements.txt
@@ -74,7 +74,6 @@ echomind/
 ### 1. Install
 
 ```bash
-cd echomind
 pip install -r requirements.txt
 ```
 

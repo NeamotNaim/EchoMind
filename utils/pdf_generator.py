@@ -28,6 +28,7 @@ from reportlab.platypus import (
     Spacer,
 )
 from reportlab.platypus.tableofcontents import TableOfContents
+from reportlab.platypus.flowables import Flowable
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,32 @@ GOLD = colors.HexColor("#8b6914")
 MAHOGANY = colors.HexColor("#4a3728")
 LIGHT_RULE = colors.HexColor("#c8b88a")
 CREAM = colors.HexColor("#f5f0e8")
+
+
+class _ChapterTitle(Flowable):
+    """A chapter heading flowable that also notifies the TableOfContents.
+
+    Plain `Paragraph` doesn't call `notify('TOCEntry', ...)` on its own, so
+    the TableOfContents stays as its placeholder text. This wraps a styled
+    Paragraph and records the (text, page-number) into the document's TOC
+    after drawing, by using ReportLab's `afterFlowable` callback on the
+    BaseDocTemplate. See `MemoirPDFGenerator._build_doc` below.
+    """
+
+    def __init__(self, text: str, style: ParagraphStyle):
+        super().__init__()
+        self.text = text
+        self._para = Paragraph(text, style)
+
+    def wrap(self, avail_w: float, avail_h: float):
+        return self._para.wrap(avail_w, avail_h)
+
+    def draw(self):
+        self._para.drawOn(self.canv, 0, 0)
+
+    def split(self, avail_w: float, avail_h: float):
+        # Don't let ReportLab split a chapter title across pages.
+        return []
 
 
 class MemoirPDFGenerator:
@@ -85,10 +112,20 @@ class MemoirPDFGenerator:
             )
             doc.addPageTemplates([cover_template, content_template])
 
+            # Hook: after every flowable is drawn, if it was a chapter title,
+            # notify the document's TableOfContents with (level, text, page).
+            # multiBuild() does a second pass, so the TOC then sees real
+            # entries and can compute real page numbers.
+            def _after_flowable(flowable):
+                if isinstance(flowable, _ChapterTitle):
+                    doc.notify("TOCEntry", (0, flowable.text, doc.page))
+
+            doc.afterFlowable = _after_flowable
+
             styles = self._build_styles()
             story = self._build_story(subject_name, birth_year, chapters, styles)
 
-            doc.build(story)
+            doc.multiBuild(story)
             return output_path
         except Exception as exc:
             logger.error("PDF generation failed: %s", exc)
@@ -268,12 +305,14 @@ class MemoirPDFGenerator:
         story.append(PageBreak())
 
         for chapter_name, body in chapters.items():
-            # Tell TOC to capture this heading
-            chapter_heading = Paragraph(
-                chapter_name,
-                styles["chapter_title"],
+            # Tell TOC to capture this heading (uses the ChapterTitle flowable
+            # so the page number gets recorded when the heading is laid out)
+            story.append(
+                _ChapterTitle(
+                    chapter_name,
+                    styles["chapter_title"],
+                )
             )
-            story.append(chapter_heading)
             story.append(Spacer(1, 0.3 * cm))
 
             paragraphs = self._split_paragraphs(body)

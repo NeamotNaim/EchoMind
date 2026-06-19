@@ -23,12 +23,14 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///echomind.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Anthropic Claude
-    ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+    # Google Gemini (used by the Flask-side interviewer)
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
 
-    # Band platform
-    BAND_API_KEY = os.getenv("BAND_API_KEY", "")
-    BAND_ROOM_ID = os.getenv("BAND_ROOM_ID", "")
+    # Band platform — WebSocket + REST endpoints
+    BAND_WS_URL = os.getenv(
+        "BAND_WS_URL", "wss://app.band.ai/api/v1/socket/websocket"
+    )
+    BAND_REST_URL = os.getenv("BAND_REST_URL", "https://app.band.ai/")
 
     # Deployment / share links
     BASE_URL = os.getenv("BASE_URL", "http://localhost:5000")

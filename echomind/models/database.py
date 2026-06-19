@@ -1,9 +1,9 @@
 """SQLAlchemy database models for EchoMind.
 
-Defines three tables:
+Defines two tables:
 - Session: a single interview / memoir production run
-- Message: every chat message in the interview transcript
-- Memoir: final output (chapters + PDF + share token)
+  (the conversation transcript is stored inline as JSON)
+- Memoir:  final output (chapters + PDF + share token)
 """
 
 import uuid
@@ -30,14 +30,12 @@ class Session(db.Model):
     subject_location = db.Column(db.String(200), nullable=True)
     status = db.Column(db.String(20), nullable=False, default="active")
     # status: active | processing | complete | error
+    conversation_json = db.Column(db.Text, nullable=True)  # JSON string
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
 
-    messages = db.relationship(
-        "Message", backref="session", cascade="all, delete-orphan", lazy=True
-    )
     memoir = db.relationship(
         "Memoir", backref="session", uselist=False, cascade="all, delete-orphan"
     )
@@ -49,30 +47,6 @@ class Session(db.Model):
             "subject_birth_year": self.subject_birth_year,
             "subject_location": self.subject_location,
             "status": self.status,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-        }
-
-
-class Message(db.Model):
-    """A single message in the interview transcript."""
-
-    __tablename__ = "messages"
-
-    id = db.Column(db.String(36), primary_key=True, default=_uuid)
-    session_id = db.Column(
-        db.String(36), db.ForeignKey("sessions.id"), nullable=False
-    )
-    role = db.Column(db.String(20), nullable=False)  # user | assistant | agent
-    agent_name = db.Column(db.String(50), nullable=True)
-    content = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "role": self.role,
-            "agent_name": self.agent_name,
-            "content": self.content,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 

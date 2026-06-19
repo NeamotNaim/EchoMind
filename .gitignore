@@ -1,7 +1,7 @@
 # ====== Project meta / prompt files ======
 # The master build prompt is a developer reference, not part of the app
 master-prompt.md
-
+EchoMind_Gemini_Prompt_update.md
 # ====== Python ======
 __pycache__/
 *.py[cod]

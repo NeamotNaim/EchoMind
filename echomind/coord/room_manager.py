@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 BAND_API_BASE = "https://api.band.ai/v1"
 LOCAL_LOG = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "band_transcript.log",
+    "coord_transcript.log",
 )
 
 

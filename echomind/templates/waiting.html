@@ -49,17 +49,16 @@
 
 <script>
   window.ECHOMIND_SESSION_ID = "{{ session.id }}";
+  window.ECHOMIND_SESSION_STATUS = "{{ session.status }}";
 </script>
 <script>
   (function () {
     var sid = window.ECHOMIND_SESSION_ID;
     var stages = ["interview", "organise", "factcheck", "storytell", "compile"];
-    var advanced = { interview: true };
 
-    function setStage(idx) {
+    function setStage(idx, label) {
       var nodes = document.querySelectorAll(".timeline .stage");
       for (var i = 0; i < nodes.length; i++) {
-        var key = nodes[i].getAttribute("data-stage");
         var mark = nodes[i].querySelector(".stage-mark");
         if (i < idx) {
           nodes[i].classList.add("done");
@@ -74,6 +73,10 @@
           mark.innerHTML = "&cir;";
         }
       }
+      if (label) {
+        var sub = document.querySelector(".waiting-sub");
+        if (sub) sub.textContent = label;
+      }
     }
 
     function check() {
@@ -85,27 +88,45 @@
             return;
           }
           if (data.status === "error") {
-            document.querySelector(".waiting-sub").textContent =
-              "Something went wrong. Please try again later.";
+            setStage(0, "Something went wrong. Please try again later.");
+            document.querySelector(".waiting-title").textContent = "Memoir build failed";
             return;
           }
-          // Heuristic progress: advance stages over time so judges see motion
+          if (data.status === "active") {
+            // Interview still in progress — show only stage 1 as the active one
+            setStage(0, "Interview in progress — please answer the questions.");
+            setTimeout(check, 4000);
+            return;
+          }
+          // status === "processing": interview done, Band pipeline running.
+          // Stage 0 (interview) is genuinely complete; advance by elapsed time
+          // for visual feedback, but cap so the spinner eventually shows the
+          // "if it's stuck, restart" hint instead of looping forever.
           var idx = 1;
-          var elapsed = (Date.now() - start) / 1000;
+          var elapsed = (data.elapsed || 0);
           if (elapsed > 20) idx = 2;
           if (elapsed > 50) idx = 3;
           if (elapsed > 80) idx = 4;
-          setStage(idx);
-          setTimeout(check, 3000);
+          var label = "Five agents are collaborating through Band. Most memoirs are ready in 2-3 minutes.";
+          if (elapsed > 120) {
+            label = "Still building — this is taking longer than usual. The LegacyBuilder may be retrying.";
+          }
+          if (elapsed > 240) {
+            label = "Build appears stuck. You can start a new interview from the home page.";
+            document.querySelector(".waiting-title").textContent = "Memoir build delayed";
+          }
+          setStage(idx, label);
+          setTimeout(check, 4000);
         })
         .catch(function () {
           setTimeout(check, 5000);
         });
     }
 
-    var start = Date.now();
-    setStage(1);
-    setTimeout(check, 3000);
+    // Pick the initial visible stage based on the session's real status
+    var initial = window.ECHOMIND_SESSION_STATUS === "active" ? 0 : 1;
+    setStage(initial);
+    setTimeout(check, 1500);
   })();
 </script>
 {% endblock %}

@@ -1,5 +1,6 @@
 """Main routes — landing page and start-session form."""
 
+import json
 from datetime import datetime
 
 from flask import (
@@ -38,17 +39,9 @@ def start_session():
         subject_birth_year=birth_year,
         subject_location=location,
         status="active",
+        conversation_json=json.dumps([]),
     )
     db.session.add(sess)
     db.session.commit()
-
-    # Greet in the Band room
-    try:
-        current_app.band.post_message(
-            f"New interview starting for {subject_name} (session: {sess.id}).",
-            agent_name="interviewer",
-        )
-    except Exception:
-        pass
 
     return redirect(url_for("session.show_session", session_id=sess.id))

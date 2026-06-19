@@ -1,0 +1,26 @@
+# Fill these with the agent_id (UUID) and api_key from your Band dashboard.
+# Go to https://app.band.ai/agents → click each agent → copy the UUID shown
+# in the bottom right of the agent page.
+#
+# The api_key was shown ONCE when you created the agent — if you lost it,
+# rotate the key in the Band dashboard.
+
+interviewer:
+  agent_id: "your-interviewer-agent-uuid"
+  api_key: "your-interviewer-api-key"
+
+organiser:
+  agent_id: "your-organiser-agent-uuid"
+  api_key: "your-organiser-api-key"
+
+factchecker:
+  agent_id: "your-factchecker-agent-uuid"
+  api_key: "your-factchecker-api-key"
+
+storyteller:
+  agent_id: "your-storyteller-agent-uuid"
+  api_key: "your-storyteller-api-key"
+
+legacybuilder:
+  agent_id: "your-legacybuilder-agent-uuid"
+  api_key: "your-legacybuilder-api-key"
